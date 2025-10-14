@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice
+  namespace: microservice-staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservice
+  template:
+    metadata:
+      labels:
+        app: microservice
+      annotations:
+        # These annotations tell a standard Prometheus server to scrape this pod for metrics.
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: microservice
+          # IMPORTANT: This will be replaced by the GitHub Actions workflow.
+          image: REPLACED_BY_CI
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            # This points the microservice to a central OTel Collector within the cluster.
+            # Assumes the collector is in the 'monitoring' namespace.
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otel-collector.monitoring.svc.cluster.local:4318"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+          # Readiness probe checks if the container is ready to start accepting traffic.
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # Liveness probe checks if the container is still running; if not, it's restarted.
+          livenessProbe:
+            httpGet:
+              path: /hello
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10

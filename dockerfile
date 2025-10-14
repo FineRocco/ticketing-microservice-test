@@ -2,15 +2,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# copy sln & csproj first for layer caching
-COPY MicroserviceTest.sln .
-COPY MicroserviceTest.csproj ./ 
-RUN dotnet restore
+# Copy all project and solution files first for layer caching.
+COPY "MicroserviceTest.sln" .
+COPY "MicroserviceTest.csproj" .
+COPY "MicroserviceTest.Tests/MicroserviceTest.Tests.csproj" "MicroserviceTest.Tests/"
 
-# copy the rest
+# Restore dependencies for the entire solution
+RUN dotnet restore "MicroserviceTest.sln"
+
+# Copy the rest of the source code
 COPY . .
-RUN dotnet build -c Release --no-restore
-RUN dotnet publish -c Release -o /out --no-build
+
+# Build and publish only the main application project for the final image
+RUN dotnet build "MicroserviceTest.csproj" -c Release --no-restore
+RUN dotnet publish "MicroserviceTest.csproj" -c Release -o /out --no-build
 
 # Stage 2: runtime
 FROM mcr.microsoft.com/dotnet/aspnet:9.0

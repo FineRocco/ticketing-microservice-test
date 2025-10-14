@@ -112,5 +112,7 @@ builder.Logging.AddOpenTelemetry(o =>
         logger.LogInformation("Hello endpoint called at {ts}", DateTimeOffset.Now);
         return Results.Ok(new { Message = "Hello from microservice!" });
     });
+    
+    Console.WriteLine("Hello from the automated pipeline!");
 
 app.Run();

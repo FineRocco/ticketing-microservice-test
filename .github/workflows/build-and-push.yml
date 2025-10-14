@@ -19,19 +19,23 @@ jobs:
         with:
           dotnet-version: '9.0.x' # Match the SDK version in your Dockerfile
 
-      # 3. Run unit tests
-      # If any test fails, the workflow will stop here.
-      - name: Run unit tests
-        run: dotnet test --verbosity normal
+      # 3. Restore NuGet packages
+      # This downloads all project dependencies before building or testing.
+      - name: Restore dependencies
+        run: dotnet restore
 
-      # 4. Log in to Docker Hub (only runs if tests passed)
+      # 4. Run unit tests
+      - name: Run unit tests
+        run: dotnet test --no-restore --verbosity normal
+
+      # 5. Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 5. Build and push the Docker image to Docker Hub
+      # 6. Build and push the Docker image to Docker Hub
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:

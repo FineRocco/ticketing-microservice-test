@@ -15,7 +15,7 @@ RUN dotnet publish -c Release -o /out --no-build
 # Stage 2: runtime
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
-COPY --from=build /app .
+COPY --from=build /out .
 
 # Kestrel on 8080 like you already do
 ENV ASPNETCORE_URLS=http://+:8080

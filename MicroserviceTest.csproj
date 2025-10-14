@@ -22,7 +22,7 @@
     <PackageReference Include="prometheus-net.SystemMetrics" Version="3.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <Compile Remove="..\MicroserviceTest.Tests\**\*.cs" />
+    <Compile Remove="MicroserviceTest.Tests\**\*.cs" />
   </ItemGroup>
 
 </Project>

@@ -9,21 +9,22 @@ using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Configuração dos Serviços ---
+// --- 1. Configuração dos Serviços Base da Aplicação ---
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks(); // Adiciona o serviço de health checks
 
 // ActivitySource para spans manuais, se necessário
 var activitySource = new ActivitySource("TestMetricsService.Manual");
 
-// --- Configuração do OpenTelemetry (Logs, Métricas e Traces) ---
 
-// Define o nome do serviço e outros recursos uma vez
+// --- 2. Configuração Unificada do OpenTelemetry ---
+
+// Define o nome do serviço e outros recursos uma única vez
 var resourceBuilder = ResourceBuilder.CreateDefault()
     .AddService("TestMetricsService", serviceVersion: "1.0.0");
 
-// Endereço do OpenTelemetry Collector (usando o nome de serviço DNS do Kubernetes)
-var otelCollectorEndpoint = "http://otel-collector-service.monitoring.svc.cluster.local:4318";
+// Endereço do OpenTelemetry Collector (usando o nome de serviço DNS completo do Kubernetes)
+var otelCollectorEndpoint = "[http://otel-collector-service.monitoring.svc.cluster.local:4318](http://otel-collector-service.monitoring.svc.cluster.local:4318)";
 
 // Configuração do Logging para enviar para o OTel Collector
 builder.Logging.ClearProviders();
@@ -36,7 +37,7 @@ builder.Logging.AddOpenTelemetry(logging =>
     logging.AddOtlpExporter(o =>
     {
         o.Endpoint = new Uri(otelCollectorEndpoint);
-        o.Protocol = OtlpExportProtocol.HttpProtobuf;
+        o.Protocol = OtlpExportProtocol.HttpProtobuf; // Usar HTTP/protobuf é geralmente mais simples
     });
 });
 
@@ -64,7 +65,8 @@ builder.Services.AddOpenTelemetry()
             o.Protocol = OtlpExportProtocol.HttpProtobuf;
         }));
 
-// --- Construção e Mapeamento dos Endpoints da Aplicação ---
+
+// --- 3. Construção e Mapeamento dos Endpoints da Aplicação ---
 var app = builder.Build();
 
 // Endpoint para o Prometheus fazer scrape diretamente
@@ -84,4 +86,5 @@ app.MapGet("/hello", (ILogger<Program> logger) =>
 });
 
 app.Run();
+    
 

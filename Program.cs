@@ -9,6 +9,9 @@ using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddHealthChecks();
+
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 // TEMP activity source for a manual span
@@ -96,14 +99,13 @@ builder.Logging.AddOpenTelemetry(o =>
             }));
 
 
-    builder.Services.AddControllers();
-    builder.Services.AddHealthChecks();
-
     var app = builder.Build();
 
     // prometheus-net scrape (direct Prometheus path)
     app.UseHttpMetrics();
     app.MapMetrics();
+    
+    app.MapHealthChecks("/health");
 
     app.MapGet("/hello", (ILogger<Program> logger) =>
     {
@@ -113,9 +115,5 @@ builder.Logging.AddOpenTelemetry(o =>
         logger.LogInformation("Hello endpoint called at {ts}", DateTimeOffset.Now);
         return Results.Ok(new { Message = "Hello from microservice!" });
     });
-    
-    app.MapHealthChecks("/health");
-    
-    Console.WriteLine("Hello from the automated pipeline!");
 
 app.Run();

@@ -66,11 +66,11 @@ jobs:
           echo "Deploying image tag: ${{ needs.build-and-push.outputs.image_tag }}"
           # CORRECTED COMMANDS BELOW
           # We use the correct deployment name ('microservice') and specify the correct namespace.
-          kubectl set image deployment/microservice microservice=${{ secrets.DOCKERHUB_USERNAME }}/microservicetest:${{ needs.build-and-push.outputs.image_tag }} --namespace=microservice-deployment
+          kubectl set image deployment/microservice microservice=${{ secrets.DOCKERHUB_USERNAME }}/microservicetest:${{ needs.build-and-push.outputs.image_tag }} --namespace=microservicetest-deployment
       
       - name: Verify Deployment
         run: |
           echo "Waiting for deployment to complete..."
           # CORRECTED COMMANDS BELOW
           # We check the status of the correct deployment in the correct namespace.
-          kubectl rollout status deployment/microservice --namespace=microservice-deployment
+          kubectl rollout status deployment/microservice --namespace=microservicetest-deployment

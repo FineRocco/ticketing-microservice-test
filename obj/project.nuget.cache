@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "JUTTB+tsgY8=",
+  "dgSpecHash": "g+Qwa9Hx998=",
   "success": true,
   "projectFilePath": "C:\\Users\\denis.ungureanu\\Desktop\\MicroserviceTest\\MicroserviceTest.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.aspnetcore.diagnostics.healthchecks\\2.2.0\\microsoft.aspnetcore.diagnostics.healthchecks.2.2.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.9\\microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.0\\microsoft.extensions.configuration.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.0\\microsoft.extensions.configuration.abstractions.9.0.0.nupkg.sha512",
@@ -12,6 +15,8 @@
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0\\microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.dependencymodel\\9.0.0\\microsoft.extensions.dependencymodel.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.diagnostics.abstractions\\9.0.0\\microsoft.extensions.diagnostics.abstractions.9.0.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.diagnostics.healthchecks\\2.2.0\\microsoft.extensions.diagnostics.healthchecks.2.2.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.diagnostics.healthchecks.abstractions\\2.2.0\\microsoft.extensions.diagnostics.healthchecks.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\9.0.0\\microsoft.extensions.fileproviders.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\9.0.0\\microsoft.extensions.hosting.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.http\\3.1.0\\microsoft.extensions.http.3.1.0.nupkg.sha512",
@@ -22,6 +27,7 @@
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.options\\9.0.0\\microsoft.extensions.options.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\9.0.0\\microsoft.extensions.options.configurationextensions.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.0\\microsoft.extensions.primitives.9.0.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.net.http.headers\\2.2.0\\microsoft.net.http.headers.2.2.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\opentelemetry\\1.13.0\\opentelemetry.1.13.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\opentelemetry.api\\1.13.0\\opentelemetry.api.1.13.0.nupkg.sha512",
@@ -46,11 +52,13 @@
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\serilog.sinks.console\\6.0.0\\serilog.sinks.console.6.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\serilog.sinks.debug\\3.0.0\\serilog.sinks.debug.3.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\serilog.sinks.file\\6.0.0\\serilog.sinks.file.6.0.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.buffers\\4.5.0\\system.buffers.4.5.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.configuration.configurationmanager\\8.0.0\\system.configuration.configurationmanager.8.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.diagnostics.diagnosticsource\\9.0.0\\system.diagnostics.diagnosticsource.9.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.diagnostics.eventlog\\8.0.0\\system.diagnostics.eventlog.8.0.0.nupkg.sha512",
     "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.diagnostics.performancecounter\\8.0.0\\system.diagnostics.performancecounter.8.0.0.nupkg.sha512",
-    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.security.cryptography.protecteddata\\8.0.0\\system.security.cryptography.protecteddata.8.0.0.nupkg.sha512"
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.security.cryptography.protecteddata\\8.0.0\\system.security.cryptography.protecteddata.8.0.0.nupkg.sha512",
+    "C:\\Users\\denis.ungureanu\\.nuget\\packages\\system.text.encodings.web\\4.5.0\\system.text.encodings.web.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }

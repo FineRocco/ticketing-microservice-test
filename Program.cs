@@ -94,9 +94,10 @@ builder.Logging.AddOpenTelemetry(o =>
                 o.Endpoint = new Uri("http://otel-collector:4318");
                 o.Protocol = OtlpExportProtocol.HttpProtobuf;
             }));
-        
+
 
     builder.Services.AddControllers();
+    builder.Services.AddHealthChecks();
 
     var app = builder.Build();
 
@@ -112,6 +113,8 @@ builder.Logging.AddOpenTelemetry(o =>
         logger.LogInformation("Hello endpoint called at {ts}", DateTimeOffset.Now);
         return Results.Ok(new { Message = "Hello from microservice!" });
     });
+    
+    app.MapHealthChecks("/health");
     
     Console.WriteLine("Hello from the automated pipeline!");
 

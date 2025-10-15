@@ -30,13 +30,13 @@ spec:
               value: "http://+:8080"
           readinessProbe:
             httpGet:
-              path: /hello
+              path: /heatlh
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /hello
+              path: /health
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10

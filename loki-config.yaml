@@ -5,7 +5,7 @@ server:
 
 ingester:
   lifecycler:
-    address: 127.0.0.1
+    address: localhost
     ring:
       kvstore:
         store: inmemory
@@ -50,7 +50,7 @@ ruler:
   ring:
     kvstore:
       store: inmemory
-  alertmanager_url: http://localhost:9093
+  alertmanager_url: http://alertmanager-service.monitoring.svc.cluster.local:9093
 
 table_manager:
   retention_deletes_enabled: true

@@ -1,119 +1,87 @@
 using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Exporter;
 using Prometheus;
 using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- Configuração dos Serviços ---
 builder.Services.AddControllers();
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks(); // Adiciona o serviço de health checks
 
-AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-// TEMP activity source for a manual span
+// ActivitySource para spans manuais, se necessário
 var activitySource = new ActivitySource("TestMetricsService.Manual");
 
-// >>> switch to gRPC (internal Docker port 4317)
-var otlpGrpc = new Uri("http://otel-collector:4317");
+// --- Configuração do OpenTelemetry (Logs, Métricas e Traces) ---
 
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(r => r.AddService("TestMetricsService"))
-    .WithTracing(t =>
-    {
-        t.AddAspNetCoreInstrumentation();
-        t.AddHttpClientInstrumentation();
-        t.AddSource("TestMetricsService.Manual");
-        t.AddOtlpExporter(o =>
-        {
-            o.Protocol = OtlpExportProtocol.Grpc;
-            o.Endpoint = otlpGrpc;
-        });
-        t.AddConsoleExporter(); // TEMP confirm
-    })
-    .WithMetrics(m =>
-    {
-        m.AddAspNetCoreInstrumentation();
-        m.AddRuntimeInstrumentation();
-        m.AddHttpClientInstrumentation();
-        m.AddProcessInstrumentation();
-        m.AddOtlpExporter(o =>
-        {
-            o.Protocol = OtlpExportProtocol.Grpc;
-            o.Endpoint = otlpGrpc;
-        });
-        m.AddConsoleExporter(); // TEMP confirm
-    });
+// Define o nome do serviço e outros recursos uma vez
+var resourceBuilder = ResourceBuilder.CreateDefault()
+    .AddService("TestMetricsService", serviceVersion: "1.0.0");
 
-builder.Logging.AddOpenTelemetry(o =>
-    {
-        o.IncludeFormattedMessage = true;
-        o.IncludeScopes = true;
-        o.ParseStateValues = true;
-        o.AddOtlpExporter(ol =>
-        {
-            ol.Protocol = OtlpExportProtocol.Grpc;
-            ol.Endpoint = otlpGrpc;
-        });
-    });
+// Endereço do OpenTelemetry Collector (usando o nome de serviço DNS do Kubernetes)
+var otelCollectorEndpoint = "http://otel-collector-service.monitoring.svc.cluster.local:4318";
 
-// ----- Logging: use OpenTelemetry provider (temporarily drop Serilog) -----
+// Configuração do Logging para enviar para o OTel Collector
 builder.Logging.ClearProviders();
-builder.Logging.SetMinimumLevel(LogLevel.Information);
-builder.Logging.AddOpenTelemetry(o =>
+builder.Logging.AddOpenTelemetry(logging =>
+{
+    logging.SetResourceBuilder(resourceBuilder);
+    logging.IncludeFormattedMessage = true;
+    logging.IncludeScopes = true;
+    logging.ParseStateValues = true;
+    logging.AddOtlpExporter(o =>
     {
-        o.IncludeFormattedMessage = true;
-        o.IncludeScopes = true;
-        o.ParseStateValues = true;
-        o.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("TestMetricsService")); // <-- add this
-        o.AddOtlpExporter(ol =>
+        o.Endpoint = new Uri(otelCollectorEndpoint);
+        o.Protocol = OtlpExportProtocol.HttpProtobuf;
+    });
+});
+
+// Configuração principal do OpenTelemetry para Métricas e Traces
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .SetResourceBuilder(resourceBuilder)
+        .AddSource("TestMetricsService.Manual") // Para spans manuais
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(o =>
         {
-            ol.Endpoint = new Uri("http://otel-collector:4318");
-            ol.Protocol = OtlpExportProtocol.HttpProtobuf;
-        });
-    });
+            o.Endpoint = new Uri(otelCollectorEndpoint);
+            o.Protocol = OtlpExportProtocol.HttpProtobuf;
+        }))
+    .WithMetrics(metrics => metrics
+        .SetResourceBuilder(resourceBuilder)
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddProcessInstrumentation()
+        .AddOtlpExporter(o =>
+        {
+            o.Endpoint = new Uri(otelCollectorEndpoint);
+            o.Protocol = OtlpExportProtocol.HttpProtobuf;
+        }));
 
-    // ----- OpenTelemetry: Traces + Metrics -----
-    builder.Services.AddOpenTelemetry()
-        .ConfigureResource(r => r.AddService("TestMetricsService"))
-        .WithTracing(t => t
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddOtlpExporter(o =>
-            {
-                o.Endpoint = new Uri("http://otel-collector:4318");
-                o.Protocol = OtlpExportProtocol.HttpProtobuf;
-            }))
-        .WithMetrics(m => m
-            .AddAspNetCoreInstrumentation()
-            .AddRuntimeInstrumentation()
-            .AddProcessInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddOtlpExporter(o =>
-            {
-                o.Endpoint = new Uri("http://otel-collector:4318");
-                o.Protocol = OtlpExportProtocol.HttpProtobuf;
-            }));
+// --- Construção e Mapeamento dos Endpoints da Aplicação ---
+var app = builder.Build();
 
+// Endpoint para o Prometheus fazer scrape diretamente
+app.MapMetrics();
 
-    var app = builder.Build();
+// Endpoint de Health Check para o Kubernetes
+app.MapHealthChecks("/health");
 
-    // prometheus-net scrape (direct Prometheus path)
-    app.UseHttpMetrics();
-    app.MapMetrics();
-    
-    app.MapHealthChecks("/health");
+// Endpoint para a telemetria do seu dashboard Grafana
+app.MapGet("/hello", (ILogger<Program> logger) =>
+{
+    using var span = activitySource.StartActivity("hello-work", ActivityKind.Server);
+    span?.SetTag("custom.attr", "ping");
 
-    app.MapGet("/hello", (ILogger<Program> logger) =>
-    {
-        using var span = activitySource.StartActivity("hello-work", ActivityKind.Server);
-        span?.SetTag("custom.attr", "ping");
-
-        logger.LogInformation("Hello endpoint called at {ts}", DateTimeOffset.Now);
-        return Results.Ok(new { Message = "Hello from microservice!" });
-    });
+    logger.LogInformation("Endpoint /hello chamado em {ts}", DateTimeOffset.Now);
+    return Results.Ok(new { Message = "Olá do micro-serviço!" });
+});
 
 app.Run();
+

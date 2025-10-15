@@ -8,7 +8,7 @@ spec:
   selector:
     app: microservice
   ports:
-    - name: TCP
+    - name: https
       port: 80
       targetPort: 8080
       nodePort: 30007

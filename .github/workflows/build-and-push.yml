@@ -46,11 +46,11 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/microservicetest:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/microservicetest:${{ github.sha }}
   deploy-to-production:
-    needs: build-and-push
+    needs: build-and-push # This should be the name of your build job
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: http://localhost:8080 # A placeholder URL for your local service
+      url: http://localhost:8080 
     steps:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
@@ -64,12 +64,13 @@ jobs:
       - name: Deploy to Production Cluster
         run: |
           echo "Deploying image tag: ${{ needs.build-and-push.outputs.image_tag }}"
-          # Use 'set image' to update the deployment with the specific new image
-          # IMPORTANT: Replace 'microservicetest-deployment' with the name of your deployment in Kubernetes
-          kubectl set image deployment/microservicetest-deployment microservicetest=${{ secrets.DOCKERHUB_USERNAME }}/microservicetest:${{ needs.build-and-push.outputs.image_tag }}
-          
+          # CORRECTED COMMANDS BELOW
+          # We use the correct deployment name ('microservice') and specify the correct namespace.
+          kubectl set image deployment/microservice microservice=${{ secrets.DOCKERHUB_USERNAME }}/microservicetest:${{ needs.build-and-push.outputs.image_tag }} --namespace=microservice-deployment
+      
       - name: Verify Deployment
         run: |
           echo "Waiting for deployment to complete..."
-          # This command waits for the update to finish and confirms it was successful
-          kubectl rollout status deployment/microservicetest-deployment
+          # CORRECTED COMMANDS BELOW
+          # We check the status of the correct deployment in the correct namespace.
+          kubectl rollout status deployment/microservice --namespace=microservice-deployment

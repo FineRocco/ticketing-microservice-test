@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: microservice
-  namespace: microservice-prod
+  namespace: microservicetest-deployment
 spec:
   selector:
     app: microservice

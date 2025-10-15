@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: microservice
-  namespace: microservice-prod
+  namespace: microservicetest-deployment
 spec:
   replicas: 2
   selector:
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: microservice
-          image: REPLACED_BY_CI
+          image: denis2076/microservicetest:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

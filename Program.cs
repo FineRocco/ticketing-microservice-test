@@ -24,7 +24,7 @@ var resourceBuilder = ResourceBuilder.CreateDefault()
     .AddService("TestMetricsService", serviceVersion: "1.0.0");
 
 // Endereço do OpenTelemetry Collector (usando o nome de serviço DNS completo do Kubernetes)
-var otelCollectorEndpoint = "[http://otel-collector-service.monitoring.svc.cluster.local:4318](http://otel-collector-service.monitoring.svc.cluster.local:4318)";
+var otelCollectorEndpoint = "http://otel-collector-service.monitoring.svc.cluster.local:4318";
 
 // Configuração do Logging para enviar para o OTel Collector
 builder.Logging.ClearProviders();

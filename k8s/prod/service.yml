@@ -4,6 +4,7 @@ metadata:
   name: microservice
   namespace: microservicetest-deployment
 spec:
+  type: LoadBalancer
   selector:
     app: microservice
   ports:

@@ -20,7 +20,7 @@ spec:
       containers:
         - name: microservice
           image: denis2076/microservicetest:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:

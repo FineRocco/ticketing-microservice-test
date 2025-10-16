@@ -11,20 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. Configuração dos Serviços Base da Aplicação ---
 builder.Services.AddControllers();
-builder.Services.AddHealthChecks(); // Adiciona o serviço de health checks
+builder.Services.AddHealthChecks();
 
-// ActivitySource para spans manuais, se necessário
 var activitySource = new ActivitySource("TestMetricsService.Manual");
 
 
 // --- 2. Configuração Unificada do OpenTelemetry ---
+var otelCollectorEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://otel-collector-is-not-configured.local:4318";
 
 // Define o nome do serviço e outros recursos uma única vez
 var resourceBuilder = ResourceBuilder.CreateDefault()
     .AddService("TestMetricsService", serviceVersion: "1.0.0");
-
-// Endereço do OpenTelemetry Collector (usando o nome de serviço DNS completo do Kubernetes)
-var otelCollectorEndpoint = "http://otel-collector-service.monitoring.svc.cluster.local:4318";
 
 // Configuração do Logging para enviar para o OTel Collector
 builder.Logging.ClearProviders();

@@ -15,8 +15,11 @@ data:
     clients:
       - url: http://loki-service.monitoring.svc.cluster.local:3100/loki/api/v1/push
 
+    # ESTA É A CONFIGURAÇÃO DE SCRAPE FINAL E CORRETA
     scrape_configs:
     - job_name: kubernetes-pods-docker
+      pipeline_stages:
+        - docker: {}
       # Usar a descoberta de serviços do Docker, que é a mais fiável no Docker Desktop
       docker_sd_configs:
         - host: unix:///var/run/docker.sock

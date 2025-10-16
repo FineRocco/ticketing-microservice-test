@@ -30,6 +30,7 @@ spec:
           mountPath: /etc/promtail
         - name: positions
           mountPath: /tmp/positions
+        # Montar a pasta de logs dos pods do host
         - name: docker
           mountPath: /var/run/docker.sock
           readOnly: true
@@ -40,7 +41,7 @@ spec:
       - name: positions
         hostPath:
           path: /tmp/promtail-positions
+      # Mapear a pasta de logs do host para o volume
       - name: docker
         hostPath:
           path: /var/run/docker.sock
-

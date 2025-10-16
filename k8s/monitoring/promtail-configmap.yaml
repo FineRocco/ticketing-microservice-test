@@ -16,21 +16,23 @@ data:
       - url: http://loki-service.monitoring.svc.cluster.local:3100/loki/api/v1/push
 
     scrape_configs:
-      - job_name: system
-        static_configs:
-          - targets:
-              - localhost
-            labels:
-              job: varlogs
-              __path__: /var/log/*log
-
-      # Configuração para fazer scrape dos logs de todos os containers
-      - job_name: containers
-        docker_sd_configs:
-          - host: unix:///var/run/docker.sock
-        relabel_configs:
-          - source_labels: ['__meta_docker_container_name']
-            regex: '/(.*)'
-            target_label: 'container'
-          - source_labels: ['__meta_docker_container_id']
-            target_label: 'container_id'
+    - job_name: kubernetes-pods-docker
+      # Usar a descoberta de serviços do Docker, que é a mais fiável no Docker Desktop
+      docker_sd_configs:
+        - host: unix:///var/run/docker.sock
+          refresh_interval: 5s
+      # Usar "relabeling" para extrair os rótulos do Kubernetes que o Docker conhece
+      relabel_configs:
+        # Manter apenas os containers que são geridos pelo Kubernetes
+        - source_labels: ['__meta_docker_container_label_io_kubernetes_pod_namespace']
+          action: keep
+          regex: .+
+        # Usar o rótulo do namespace do Kubernetes
+        - source_labels: ['__meta_docker_container_label_io_kubernetes_pod_namespace']
+          target_label: 'namespace'
+        # Usar o rótulo do nome do pod do Kubernetes
+        - source_labels: ['__meta_docker_container_label_io_kubernetes_pod_name']
+          target_label: 'pod'
+        # Usar o rótulo do nome do container do Kubernetes
+        - source_labels: ['__meta_docker_container_label_io_kubernetes_container_name']
+          target_label: 'container'
